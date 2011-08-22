@@ -1,16 +1,17 @@
-<html>
-<head>
-<title>Monitor Tools</title>
-<link rel="stylesheet" href="css/style.css" />
-<link rel="stylesheet" href="css/jquery.mobile-1.0b2.min.css" />
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>DroniX Web Manager</title> 
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 
-<script type="text/javascript" src="js/dinamic.js"></script>
-<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="js/jquery.mobile-1.0b2.min.js"></script>
-</head>
-
-<body>
-  <script>
+	<link rel="stylesheet" href="css/jquery.mobile-1.0b2.min.css" />
+	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.0b2.min.js"></script>
+	<script type="text/javascript" src="js/dinamic.js"></script>
+</head> 
+<body> 
+ <script>
     $(document).ready(function() {
     
     var reload;
@@ -25,48 +26,70 @@
     
     });
   </script>
-  
-<div id="header">
-  <img src="image/dronixlogo2.png"/>
-  <table border="0"><tr>
-      <td class="headitem"><a href="index.html">home</a></td>
-      <td class="headitem"><a href="versionNote.html">versionNote</a></td>
-      <td class="headitem"><a href="modules.html">modules</a></td>
-      <td class="headitem"><a href="sdcard">SD-Card</a></td>
-      <td class="headitem"><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ZCZJMRK7UGHH6&lc=GB&item_name=DroniX%20Development&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted">donate</a></td></tr></table>
-</div>
+ 
+<div data-role="page" id="index" data-title="DroniX Web Manager">
 
-<div id="content">
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	  <a href="#modules" data-icon="gear" class="ui-btn-right" data-transition="slideup">Modules</a>
+	</div><!-- /header -->
+	
+	<div data-role="content">	
+		<h3>DroniX Web Manager</h3>
+		<h3>System info</h3>
+		<div id="system"></div>
+	</div><!-- /content -->
 
-  <div id="system-container">
-    <h3>System info</h3>
-    <div id="system"></div>
-  </div>
+	<div data-role="footer">
+	  <a href="#about" data-role="button" data-icon="info">About</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
 
-  <div id="ram"></div>
-  <pre>
-    <div id="test"></div>
-  </pre>
+<div data-role="page" id="modules" data-title="Modules">
 
-  <h3>DroniX Information</h3>
-  <table border="0">
-    <tr>
-      <td>Author:</td>
-      <td>Stefano Viola aka estebanSannin</td>
-    </tr>
-    <tr>
-      <td>Version ROM:</td>
-      <td>0.4</td>
-      <td>Version Web Manager:</td>
-      <td>0.2</td>
-    </tr>
-  </table>
-</div>
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	</div><!-- /header -->
+	
+	<div data-role="content">	
+	  <h2>Modules</h2>
+	  <div data-role="controlgroup">
+	    <a href="upload.html" data-role="button">Upload to SDCARD</a>
+	    <a href="passwd-ssh.html" data-role="button">Change SSH Passwd</a>
+	    <a href="cpu.html" data-role="button">CPU Monitor</a>
+	    <a href="ssh.html" data-role="button">SSH Enabler</a>
+	    <a href="system.html" data-role="button">System Monitoring</a>
+	    <a href="themeChanger.html" data-role="button">Theme Changer</a>
+	  </div>
+	</div><!-- /content -->
 
-<div id='footer'>
-  DroniX is a Free Firmware for Android Devices.
-  <font color=red>DroniX Web Manager</font> by <font color=yellow><a href='http://esteban.homelinux.org'>Stefano Viola (EstebanSannin)</a></font>
-</div>
+	<div data-role="footer">
+	  <a href="#index" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="about" data-title="About">
+
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	</div><!-- /header -->
+	
+	<div data-role="content">
+	  <h3>About</h3>
+	  <p>Based on a work by Stefano Viola, DroniX Web Manager has
+	  been refactored by Ivan Morgillo. Current version is based
+	  on jQuery.mobile to improve user experience.</p>
+	  <p>Contact us</p>
+	  <ul id="contacts">
+	    <li><a href="mailto:stefano.viola@dronix.org">Stefano Viola</a></li>
+	    <li><a href="mailto:ivan.morgillo@dronix.org">Ivan Morgillo</a></li>
+	  </ul>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+	  <a href="#index" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
+
 </body>
 </html>
-
