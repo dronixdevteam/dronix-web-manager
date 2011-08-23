@@ -12,17 +12,20 @@
 </head> 
 <body> 
  <script>
+   var sysinfo = null;
+   
     $(document).ready(function() {
     
     var reload;
     function dinam(cgi, label){
     reload=setInterval(cgiRequest, 1500,cgi, label);
     }
+
     function stop(){
     clearInterval(reload);
     }
     
-    setInterval(cgiRequest, 1000, 'cgi-bin/sysinfo.cgi', 'system');
+   sysinfo = setInterval(cgiRequest, 1000, 'cgi-bin/sysinfo.cgi', 'system');
 
     /* CPU stats block */
     $("#cpu-stats-button").click(function() {
@@ -39,7 +42,21 @@
     location.reload(true);
     });
     /* CPU stats block - END */
-    
+
+   /* SSH toggle block */
+   $("#ssh-on").click(function() {
+   $.get("cgi-bin/ssh-on.cgi", function(data){
+   alert(data);
+   });
+   });
+
+   $("#ssh-off").click(function() {
+   $.get("cgi-bin/ssh-off.cgi", function(data){
+   alert(data);
+   });
+   });
+   /* SSH toggle block - END */
+
     });
   </script>
  
@@ -62,7 +79,10 @@
 </div><!-- /page -->
 
 <div data-role="page" id="modules" data-title="Modules">
-
+  <script>
+    clearInterval(sysinfo);
+  </script>
+  
 	<div data-role="header">
 	  <h1>DroniX</h1>
 	</div><!-- /header -->
@@ -73,7 +93,7 @@
 	    <a href="upload.html" data-role="button">Upload to SDCARD</a>
 	    <a href="passwd-ssh.html" data-role="button">Change SSH Passwd</a>
 	    <a href="#cpu" data-role="button">CPU Monitor</a>
-	    <a href="ssh.html" data-role="button">SSH Enabler</a>
+	    <a href="#ssh-toggle" data-role="button">SSH Enabler</a>
 	    <a href="system.html" data-role="button">System Monitoring</a>
 	    <a href="themeChanger.html" data-role="button">Theme Changer</a>
 	  </div>
@@ -135,6 +155,29 @@
 
   <div data-role="footer">
     <a href="#index" data-role="button" data-icon="arrow-l">Back</a> 
+  </div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="ssh-toggle" data-title="SSH Toggle">
+  <div data-role="header">
+    <h1>DroniX</h1>
+  </div><!-- /header -->
+  
+  <div data-role="content">
+    <table border="0">
+      <tr>
+      <tr>
+	<td><input id="ssh-on" type="button" name="memory" value="SSH ON"></td>
+      </tr>
+      <tr>
+	<td><input id="ssh-off" type="button" name="memory" value="SSH OFF"></td>
+      </tr>
+      </tr>
+    </table>
+  </div><!-- /content -->
+  
+  <div data-role="footer">
+    <a href="#index" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
   </div><!-- /footer -->
 </div><!-- /page -->
 
