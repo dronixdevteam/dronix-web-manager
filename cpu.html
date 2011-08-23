@@ -1,53 +1,76 @@
-<html>
-<link rel='stylesheet' href='style.css' type='text/css'>
-<head>
-<title>Monitor Tools</title>
-<script src="js/ajaxsbmt.js" type="text/javascript"></script>
-<script language="javascript" src="dinamic.js" type=text/javascript></script>
-</head>
-<body>
-<!-- onload="setInterval(mostraOra, 1000);"> -->
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>CPU infos</title> 
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 
-<div id='footer'><font color=red>DroniX Web Manager</font> by <font color=yellow><a href='http://esteban.homelinux.org'>Stefano Viola (EstebanSannin)</a></font></div>
+	<link rel="stylesheet" href="css/jquery.mobile-1.0b2.min.css" />
+	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.0b2.min.js"></script>
+	<script type="text/javascript" src="js/dinamic.js"></script>
+</head> 
+<body> 
+ <script>
+   $(document).ready(function() {
+    var reload;
 
-<div id='header'><img src="image/dronixlogo2.png">
-<table border="0"><tr>
-<td class="headitem"><a href="index.html">home</a></td>
-<td class="headitem"><a href="versionNote.html">versionNote</a></td>
-<td class="headitem"><a href="modules.html">modules</a></td>
-<td class="headitem"><a href="sdcard">SD-Card</a></td>
-<td class="headitem"><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ZCZJMRK7UGHH6&lc=GB&item_name=DroniX%20Development&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted">donate</a></td></tr></table>
-</div>
-<div id='content'>
-<br>
-<script>
-var reload;
-function dinam(cgi, label){
-	reload=setInterval(cgiRequest, 1500,cgi, label);
-}
-function stop(){
-	clearInterval(reload);
-}
+    function dinam(cgi, label){
+    reload=setInterval(cgiRequest, 1500,cgi, label);
+    }
 
-</script>
-<br>
-<br><pre>
-</pre>
-<table border="0"><tr>
-<td><input type="button" name="memory" value="CPU" OnClick="javascript:stop(); dinam('cgi-bin/cpu.cgi', 'output');"</td><td>---</td><td>Real Time CPU Monitoring</td></tr>
-<td><input type="button" name="memory" value="CPU-STAT" OnClick="javascript:stop(); dinam('cgi-bin/cpu-stats.cgi', 'output');"</td><td>---</td><td>CPU Statistic</td></tr>
-<tr><td><br><input type="button" name="memory" value="reset" OnClick="location.reload(true);"></td><td><br>---</td><td><br>Reset All Monitor</td>
-</tr></table>
-<h3>Output:</h3> 
+    function stop(){
+    clearInterval(reload);
+    }
+
+   $("#cpu-stats-button").click(function() {
+   stop();
+   dinam('cgi-bin/cpu-stats.cgi', 'output');
+   });
+
+   $("#cpu-button").click(function() {
+   stop();
+   dinam('cgi-bin/cpu.cgi', 'output');
+   });
+
+   $("#reset-button").click(function() {
+   location.reload(true);
+   });
+   
+   });
+  </script>
+
+ <div data-role="page" id="cpu" data-title="CPU infos">
+
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	</div><!-- /header -->
+	
+	<div data-role="content">	
+	 <table border="0">
+	   <tr>
+	     <td><input type="button" id="cpu-button" name="memory" value="CPU"></td>
+	     <td>Real Time CPU Monitoring</td>
+	   </tr>
+	   <tr>
+	     <td><input type="button" id="cpu-stats-button" name="memory" value="CPU-STAT"></td>
+	     <td>CPU Statistic</td>
+	   </tr>
+	   <tr>
+	     <td><input type="button" id="reset-button" name="memory" value="reset">
+	     </td>
+	     <td>Reset All Monitor</td>
+	   </tr>
+	 </table>
 <pre>
 <span id="output"></span>
 </pre>
-<!-- <form action="" method="" name="form">
-<textarea id="textarea" name="textarea" rows="30" cols="100" style='color: white; font-size: 87%' readonly>
-</textarea>
-</form>
--->
-</div>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+	  <a href="#index" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
+
 </body>
 </html>
-
