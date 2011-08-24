@@ -9,7 +9,9 @@
 	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery.mobile-1.0b2.min.js"></script>
 	<script>
+	  <!-- I know: global vars are evil. Gotta be improved -->
 	  var reload;
+	  var oldPassword;
 	</script>
 </head> 
 <body> 
@@ -21,6 +23,10 @@
     $.get("cgi-bin/sysinfo.cgi", function(data){
     $("#system-output").html(data);}
     )}, 1000);
+    $.get("cgi-bin/getOldSSHpassword.cgi", function(data){
+    oldPassword = data;
+    });
+
     
     $("#modules-button").click(function(){
     clearInterval(reload);
@@ -87,7 +93,7 @@
     )}, 1000);
    });
 
-    $("#dmesg-button").click(function() {
+   $("#dmesg-button").click(function() {
    clearInterval(reload);
    reload = setInterval(function(){
    $.get("cgi-bin/dmesg.cgi", function(data){
@@ -95,8 +101,32 @@
     )}, 1000);
    });
    /* System Monitoring block - END */
-   
+
+   function checkOldPassowrd() {
+   if ( $.trim(oldPassword) == $.trim($('#old-password').val()) ) {
+   return true;
+   }
+   else {
+   alert('Password does not match');
+   return false;
+   }
+   }
+
+   $("#password-reset-button").click(function() {
+   $.get("cgi-bin/ssh-password-change.cgi", { passwd: $.trim("android") }, function(data){
+   alert(data + "\n" + "Default password is: android");
+   })
    });
+   
+   $("#password-change-button").click(function() {
+   if (checkOldPassowrd()) {
+   $.get("cgi-bin/ssh-password-change.cgi", { passwd: $('#new-password').val() }, function(data){
+   alert(data);
+   })
+   }
+   });
+
+    });
   </script>
  
 <div data-role="page" id="index" data-title="DroniX Web Manager">
@@ -131,9 +161,9 @@
 	  <h2>Modules</h2>
 	  <div data-role="controlgroup">
 	    <a href="upload.html" data-role="button">Upload to SDCARD</a>
-	    <a href="passwd-ssh.html" data-role="button">Change SSH Passwd</a>
+	    <a href="#ssh-toggle" data-role="button">SSH Toggle</a>
+	    <a href="#ssh-password-change" data-role="button">Change SSH Passwod</a>
 	    <a href="#cpu" data-role="button">CPU Monitor</a>
-	    <a href="#ssh-toggle" data-role="button">SSH Enabler</a>
 	    <a href="#system-monitoring" data-role="button">System Monitoring</a>
 	    <a href="#" data-role="button" OnClick="alert('Currently unavailable')">Theme Changer</a>
 	  </div>
@@ -258,6 +288,29 @@
   <div data-role="footer">
     <a href="#modules" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
   </div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="ssh-password-change" data-title="SSH Password Change">
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	</div><!-- /header -->
+	
+	<div data-role="content">
+	  <p>Old password:
+	  <input id="old-password" type="text" size="25" value="">
+	  </p> 
+	  <p>
+	    New password: <input id="new-password" name="passwd" type="text">
+	    <a href="#" id="password-change-button" data-role="button" data-icon="check">Change!</a> 
+	  </p>
+	  <p>
+	    <a href="#" id="password-reset-button" data-role="button" data-icon="delete">Reset!</a> 
+	  </p>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+	  <a href="#modules" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+	</div><!-- /footer -->
 </div><!-- /page -->
 
 </body>
