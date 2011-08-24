@@ -8,38 +8,45 @@
 	<link rel="stylesheet" href="css/jquery.mobile-1.0b2.min.css" />
 	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery.mobile-1.0b2.min.js"></script>
-	<script type="text/javascript" src="js/dinamic.js"></script>
+	<script>
+	  var reload;
+	</script>
 </head> 
 <body> 
  <script>
-   var sysinfo = null;
-   
     $(document).ready(function() {
-    
-    var reload;
-    function dinam(cgi, label){
-    reload=setInterval(cgiRequest, 1500,cgi, label);
-    }
 
-    function stop(){
+    /* Loaded on index.html */
+    reload = setInterval(function(){
+    $.get("cgi-bin/sysinfo.cgi", function(data){
+    $("#system-output").html(data);}
+    )}, 1000);
+    
+    $("#modules-button").click(function(){
     clearInterval(reload);
-    }
+    $("#cpu-output").text("");
+    $("#system-monitoring-output").text();
+    });
     
-   sysinfo = setInterval(cgiRequest, 1000, 'cgi-bin/sysinfo.cgi', 'system');
-
     /* CPU stats block */
     $("#cpu-stats-button").click(function() {
-    stop();
-    dinam('cgi-bin/cpu-stats.cgi', 'output');
+    clearInterval(reload);
+    reload = setInterval(function(){
+    $.get("cgi-bin/cpu-stats.cgi", function(data){
+    $("#cpu-output").text(data);}
+    )}, 1000);
     });
 
     $("#cpu-button").click(function() {
-    stop();
-    dinam('cgi-bin/cpu.cgi', 'output');
+    clearInterval(reload);
+    reload = setInterval(function(){
+    $.get("cgi-bin/cpu.cgi", function(data){
+    $("#cpu-output").text(data);}
+    )}, 1000);
     });
     
-    $("#reset-button").click(function() {
-    location.reload(true);
+    $(".reset-button").click(function() {
+    clearInterval(reload);
     });
     /* CPU stats block - END */
 
@@ -57,20 +64,53 @@
    });
    /* SSH toggle block - END */
 
-    });
+   /* System Monitoring block */
+   $("#partitions-button").click(function() {
+   $.get("cgi-bin/diskUsage.cgi", function(data){
+   $("#system-monitoring-output").text(data);
+   });
+   });
+
+   $("#ram-button").click(function() {
+   clearInterval(reload);
+   reload = setInterval(function(){
+    $.get("cgi-bin/ram.cgi", function(data){
+      $("#system-monitoring-output").text(data);}
+    )}, 1000);
+   });
+
+   $("#battery-button").click(function() {
+   clearInterval(reload);
+   reload = setInterval(function(){
+   $.get("cgi-bin/battery.cgi", function(data){
+      $("#system-monitoring-output").text(data);}
+    )}, 1000);
+   });
+
+    $("#dmesg-button").click(function() {
+   clearInterval(reload);
+   reload = setInterval(function(){
+   $.get("cgi-bin/dmesg.cgi", function(data){
+      $("#system-monitoring-output").text(data);}
+    )}, 1000);
+   });
+   /* System Monitoring block - END */
+   
+   });
   </script>
  
 <div data-role="page" id="index" data-title="DroniX Web Manager">
 
 	<div data-role="header">
 	  <h1>DroniX</h1>
-	  <a href="#modules" data-icon="gear" class="ui-btn-right" data-transition="slideup">Modules</a>
+	  <a id="modules-button" href="#modules" data-icon="gear"
+	     class="ui-btn-right" data-transition="slideup">Modules</a>
 	</div><!-- /header -->
 	
 	<div data-role="content">	
 		<h3>DroniX Web Manager</h3>
 		<h3>System info</h3>
-		<div id="system"></div>
+		<div id="system-output"></div>
 	</div><!-- /content -->
 
 	<div data-role="footer">
@@ -80,7 +120,7 @@
 
 <div data-role="page" id="modules" data-title="Modules">
   <script>
-    clearInterval(sysinfo);
+    clearInterval(reload);
   </script>
   
 	<div data-role="header">
@@ -94,8 +134,8 @@
 	    <a href="passwd-ssh.html" data-role="button">Change SSH Passwd</a>
 	    <a href="#cpu" data-role="button">CPU Monitor</a>
 	    <a href="#ssh-toggle" data-role="button">SSH Enabler</a>
-	    <a href="system.html" data-role="button">System Monitoring</a>
-	    <a href="themeChanger.html" data-role="button">Theme Changer</a>
+	    <a href="#system-monitoring" data-role="button">System Monitoring</a>
+	    <a href="#" data-role="button" OnClick="alert('Currently unavailable')">Theme Changer</a>
 	  </div>
 	</div><!-- /content -->
 
@@ -139,22 +179,22 @@
 	<td>Real Time CPU Monitoring</td>
       </tr>
       <tr>
-	<td><input type="button" id="cpu-stats-button" name="memory" value="CPU-STAT"></td>
+	<td><input type="button" id="cpu-stats-button" name="memory" value="CPU STATS"></td>
 	<td>CPU Statistic</td>
       </tr>
       <tr>
-	<td><input type="button" id="reset-button" name="memory" value="reset">
+	<td><input type="button" class="reset-button" name="memory" value="Reset">
 	</td>
 	<td>Reset All Monitor</td>
       </tr>
     </table>
     <pre>
-      <span id="output"></span>
+      <span id="cpu-output"></span>
     </pre>
   </div><!-- /content -->
 
   <div data-role="footer">
-    <a href="#index" data-role="button" data-icon="arrow-l">Back</a> 
+    <a href="#modules" data-role="button" data-icon="arrow-l">Back</a> 
   </div><!-- /footer -->
 </div><!-- /page -->
 
@@ -177,7 +217,46 @@
   </div><!-- /content -->
   
   <div data-role="footer">
-    <a href="#index" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+    <a href="#modules" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+  </div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="system-monitoring" data-title="System Monitoring">
+  <div data-role="header">
+    <h1>System Monitoring</h1>
+  </div><!-- /header -->
+  
+  <div data-role="content">
+    <table border="0"><tr>
+      <tr>
+	<td><input type="button" id="partitions-button" name="memory" value="Partitions"></td>
+	<td>Monitoring partition space</td>
+      </tr>
+      <tr>
+	<td><input type="button" id="ram-button" name="memory" value="RAM"></td>
+	<td>Monitoring Linux system RAM</td>
+      </tr>
+      <tr>
+	<td><input type="button" id="battery-button" name="memory" value="Battery"></td>
+	<td>Monitoring Battery value (Ideos only)</td>
+      </tr>
+      <tr>
+	<td><input type="button" id="dmesg-button" name="memory" value="Log"></td>
+	<td>Monitoring System Log</td>
+      </tr>
+      <tr>
+	<td><input type="button" class="reset-button" name="memory" value="Reset"></td>
+	<td>Reset All Monitor</td>
+      </tr>
+    </table>
+    <h3>Output:</h3>
+    <pre>
+      <div style="font-size: x-small;" id="system-monitoring-output"></div>
+    </pre>
+  </div><!-- /content -->
+  
+  <div data-role="footer">
+    <a href="#modules" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
   </div><!-- /footer -->
 </div><!-- /page -->
 
