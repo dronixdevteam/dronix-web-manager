@@ -12,7 +12,8 @@ body  {
 	background-position: center center;
 	/*background-repeat: repeat-y ;*/
   	/*background-position: center;*/
-
+   height:800px;
+   width:480px; 
 }
 
 div#footer  {

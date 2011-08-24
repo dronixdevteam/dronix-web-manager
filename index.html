@@ -1,61 +1,317 @@
-<html>
-    <link rel='stylesheet' href='style.css' type='text/css'>
-    <head>
-        <title>Monitor Tools</title>
-        <script src="js/ajaxsbmt.js" type="text/javascript"></script>
-        <script language="javascript" src="dinamic.js" type=text/javascript></script>
-    </head>
-    <body>
-        <!-- onload="setInterval(mostraOra, 1000);"> -->
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>DroniX Web Manager</title> 
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 
-        <div id='header'><img src="image/dronixlogo2.png">
-            <table border="0"><tr>
-                    <td class="headitem"><a href="index.html">home</a></td>
-                    <td class="headitem"><a href="versionNote.html">versionNote</a></td>
-                    <td class="headitem"><a href="modules.html">modules</a></td>
-                    <td class="headitem"><a href="sdcard">SD-Card</a></td>
-                    <td class="headitem"><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ZCZJMRK7UGHH6&lc=GB&item_name=DroniX%20Development&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted">donate</a></td></tr></table>
-        </div>
-        <div id='content'>
-            <br>
-            <script>
-                var reload;
-                function dinam(cgi, label){
-                    reload=setInterval(cgiRequest, 1500,cgi, label);
-                }
-                function stop(){
-                    clearInterval(reload);
-                }
+	<link rel="stylesheet" href="css/jquery.mobile-1.0b2.min.css" />
+	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.0b2.min.js"></script>
+	<script>
+	  <!-- I know: global vars are evil. Gotta be improved -->
+	  var reload;
+	  var oldPassword;
+	</script>
+</head> 
+<body> 
+ <script>
+    $(document).ready(function() {
 
-            </script>
-            <br>
-<pre>
-SysInfo:
-</pre>
-            <span id="system"></span>
-            <span id="ram"></span>
-            <br><pre>
-<span id="test"></span>
-</pre>
-            <script>        
-                setInterval(cgiRequest, 1000, 'cgi-bin/sysinfo.cgi', 'system');
-            </script> 
-            <h3>DroniX Information</h3>
-            <table border="0"><tr>
-                    <td>Author:</td>
-                    <td>Stefano Viola aka estebanSannin</td></tr>
-                <td>Version ROM:</td>
-                <td>0.4</td></tr>
-            <td>Version Web Manager:</td>
-            <td>0.2</td></tr>
+    /* Loaded on index.html */
+    reload = setInterval(function(){
+    $.get("cgi-bin/sysinfo.cgi", function(data){
+    $("#system-output").html(data);}
+    )}, 1000);
+    $.get("cgi-bin/getOldSSHpassword.cgi", function(data){
+    oldPassword = data;
+    });
+
+    
+    $("#modules-button").click(function(){
+    clearInterval(reload);
+    $("#cpu-output").text("");
+    $("#system-monitoring-output").text();
+    });
+    
+    /* CPU stats block */
+    $("#cpu-stats-button").click(function() {
+    clearInterval(reload);
+    reload = setInterval(function(){
+    $.get("cgi-bin/cpu-stats.cgi", function(data){
+    $("#cpu-output").text(data);}
+    )}, 1000);
+    });
+
+    $("#cpu-button").click(function() {
+    clearInterval(reload);
+    reload = setInterval(function(){
+    $.get("cgi-bin/cpu.cgi", function(data){
+    $("#cpu-output").text(data);}
+    )}, 1000);
+    });
+    
+    $(".reset-button").click(function() {
+    clearInterval(reload);
+    });
+    /* CPU stats block - END */
+
+   /* SSH toggle block */
+   $("#ssh-on").click(function() {
+   $.get("cgi-bin/ssh-on.cgi", function(data){
+   alert(data);
+   });
+   });
+
+   $("#ssh-off").click(function() {
+   $.get("cgi-bin/ssh-off.cgi", function(data){
+   alert(data);
+   });
+   });
+   /* SSH toggle block - END */
+
+   /* System Monitoring block */
+   $("#partitions-button").click(function() {
+   $.get("cgi-bin/diskUsage.cgi", function(data){
+   $("#system-monitoring-output").text(data);
+   });
+   });
+
+   $("#ram-button").click(function() {
+   clearInterval(reload);
+   reload = setInterval(function(){
+    $.get("cgi-bin/ram.cgi", function(data){
+      $("#system-monitoring-output").text(data);}
+    )}, 1000);
+   });
+
+   $("#battery-button").click(function() {
+   clearInterval(reload);
+   reload = setInterval(function(){
+   $.get("cgi-bin/battery.cgi", function(data){
+      $("#system-monitoring-output").text(data);}
+    )}, 1000);
+   });
+
+   $("#dmesg-button").click(function() {
+   clearInterval(reload);
+   reload = setInterval(function(){
+   $.get("cgi-bin/dmesg.cgi", function(data){
+      $("#system-monitoring-output").text(data);}
+    )}, 1000);
+   });
+   /* System Monitoring block - END */
+
+   function checkOldPassowrd() {
+   if ( $.trim(oldPassword) == $.trim($('#old-password').val()) ) {
+   return true;
+   }
+   else {
+   alert('Password does not match');
+   return false;
+   }
+   }
+
+   $("#password-reset-button").click(function() {
+   $.get("cgi-bin/ssh-password-change.cgi", { passwd: $.trim("android") }, function(data){
+   alert(data + "\n" + "Default password is: android");
+   })
+   });
+   
+   $("#password-change-button").click(function() {
+   if (checkOldPassowrd()) {
+   $.get("cgi-bin/ssh-password-change.cgi", { passwd: $('#new-password').val() }, function(data){
+   alert(data);
+   })
+   }
+   });
+
+    });
+  </script>
+ 
+<div data-role="page" id="index" data-title="DroniX Web Manager">
+
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	  <a id="modules-button" href="#modules" data-icon="gear"
+	     class="ui-btn-right" data-transition="slideup">Modules</a>
+	</div><!-- /header -->
+	
+	<div data-role="content">	
+		<h3>DroniX Web Manager</h3>
+		<h3>System info</h3>
+		<div id="system-output"></div>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+	  <a href="#about" data-role="button" data-icon="info">About</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="modules" data-title="Modules">
+  <script>
+    clearInterval(reload);
+  </script>
+  
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	</div><!-- /header -->
+	
+	<div data-role="content">	
+	  <h2>Modules</h2>
+	  <div data-role="controlgroup">
+	    <a href="upload.html" data-role="button">Upload to SDCARD</a>
+	    <a href="#ssh-toggle" data-role="button">SSH Toggle</a>
+	    <a href="#ssh-password-change" data-role="button">Change SSH Passwod</a>
+	    <a href="#cpu" data-role="button">CPU Monitor</a>
+	    <a href="#system-monitoring" data-role="button">System Monitoring</a>
+	    <a href="#" data-role="button" OnClick="alert('Currently unavailable')">Theme Changer</a>
+	  </div>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+	  <a href="#index" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="about" data-title="About">
+
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	</div><!-- /header -->
+	
+	<div data-role="content">
+	  <h3>About</h3>
+	  <p>Based on a work by Stefano Viola, DroniX Web Manager has
+	  been refactored by Ivan Morgillo. Current version is based
+	  on jQuery.mobile to improve user experience.</p>
+	  <p>Contact us</p>
+	  <ul id="contacts">
+	    <li><a href="mailto:stefano.viola@dronix.org">Stefano Viola</a></li>
+	    <li><a href="mailto:ivan.morgillo@dronix.org">Ivan Morgillo</a></li>
+	  </ul>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+	  <a href="#index" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="cpu" data-title="CPU infos">
+  <div data-role="header">
+    <h1>DroniX</h1>
+  </div><!-- /header -->
+  
+  <div data-role="content">	
+    <table border="0">
+      <tr>
+	<td><input type="button" id="cpu-button" name="memory" value="CPU"></td>
+	<td>Real Time CPU Monitoring</td>
+      </tr>
+      <tr>
+	<td><input type="button" id="cpu-stats-button" name="memory" value="CPU STATS"></td>
+	<td>CPU Statistic</td>
+      </tr>
+      <tr>
+	<td><input type="button" class="reset-button" name="memory" value="Reset">
+	</td>
+	<td>Reset All Monitor</td>
+      </tr>
     </table>
-    <br>
-    <br>
-    DroniX is a Free Firmware for Android Devices.
+    <pre>
+      <span id="cpu-output"></span>
+    </pre>
+  </div><!-- /content -->
 
+  <div data-role="footer">
+    <a href="#modules" data-role="button" data-icon="arrow-l">Back</a> 
+  </div><!-- /footer -->
+</div><!-- /page -->
 
-    </div>
-    <div id='footer'><font color=red>DroniX Web Manager</font> by <font color=yellow><a href='http://esteban.homelinux.org'>Stefano Viola (EstebanSannin)</a></font></div>
+<div data-role="page" id="ssh-toggle" data-title="SSH Toggle">
+  <div data-role="header">
+    <h1>DroniX</h1>
+  </div><!-- /header -->
+  
+  <div data-role="content">
+    <table border="0">
+      <tr>
+      <tr>
+	<td><input id="ssh-on" type="button" name="memory" value="SSH ON"></td>
+      </tr>
+      <tr>
+	<td><input id="ssh-off" type="button" name="memory" value="SSH OFF"></td>
+      </tr>
+      </tr>
+    </table>
+  </div><!-- /content -->
+  
+  <div data-role="footer">
+    <a href="#modules" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+  </div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="system-monitoring" data-title="System Monitoring">
+  <div data-role="header">
+    <h1>System Monitoring</h1>
+  </div><!-- /header -->
+  
+  <div data-role="content">
+    <table border="0"><tr>
+      <tr>
+	<td><input type="button" id="partitions-button" name="memory" value="Partitions"></td>
+	<td>Monitoring partition space</td>
+      </tr>
+      <tr>
+	<td><input type="button" id="ram-button" name="memory" value="RAM"></td>
+	<td>Monitoring Linux system RAM</td>
+      </tr>
+      <tr>
+	<td><input type="button" id="battery-button" name="memory" value="Battery"></td>
+	<td>Monitoring Battery value (Ideos only)</td>
+      </tr>
+      <tr>
+	<td><input type="button" id="dmesg-button" name="memory" value="Log"></td>
+	<td>Monitoring System Log</td>
+      </tr>
+      <tr>
+	<td><input type="button" class="reset-button" name="memory" value="Reset"></td>
+	<td>Reset All Monitor</td>
+      </tr>
+    </table>
+    <h3>Output:</h3>
+    <pre>
+      <div style="font-size: x-small;" id="system-monitoring-output"></div>
+    </pre>
+  </div><!-- /content -->
+  
+  <div data-role="footer">
+    <a href="#modules" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+  </div><!-- /footer -->
+</div><!-- /page -->
+
+<div data-role="page" id="ssh-password-change" data-title="SSH Password Change">
+	<div data-role="header">
+	  <h1>DroniX</h1>
+	</div><!-- /header -->
+	
+	<div data-role="content">
+	  <p>Old password:
+	  <input id="old-password" type="text" size="25" value="">
+	  </p> 
+	  <p>
+	    New password: <input id="new-password" name="passwd" type="text">
+	    <a href="#" id="password-change-button" data-role="button" data-icon="check">Change!</a> 
+	  </p>
+	  <p>
+	    <a href="#" id="password-reset-button" data-role="button" data-icon="delete">Reset!</a> 
+	  </p>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+	  <a href="#modules" data-role="button" data-icon="arrow-l" data-rel="back">Back</a> 
+	</div><!-- /footer -->
+</div><!-- /page -->
+
 </body>
 </html>
-
