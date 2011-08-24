@@ -72,6 +72,7 @@
 
    /* System Monitoring block */
    $("#partitions-button").click(function() {
+    clearInterval(reload);
    $.get("cgi-bin/diskUsage.cgi", function(data){
    $("#system-monitoring-output").text(data);
    });
